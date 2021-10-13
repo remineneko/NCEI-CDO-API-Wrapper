@@ -304,3 +304,4 @@ class NOAA:
         accepted_metadata_choices = ['true', 'false']
         if 'include_metadata' in kwargs and kwargs['include_metadata'] in accepted_metadata_choices:
             url += '&includemetadata={}'.format(kwargs['include_metadata'])
+        return self._get_data(url, self._token)
