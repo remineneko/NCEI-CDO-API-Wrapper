@@ -15,18 +15,29 @@ class Data(dict):
         self._data = given_data
 
     def results_data(self):
+        '''
+        :return: the results from the data
+        '''
         if 'results' in self._data:
             return self._data['results']
         else:
             return self._data
 
     def metadata(self):
+        '''
+        :return: the metadata from the data.
+        :raise: KeyError if metadata is not included.
+        '''
         if 'metadata' in self._data:
             return self._data['metadata']
         else:
             raise KeyError("The given data does not have metadata as key")
 
     def __str__(self):
+        '''
+        mainly for print
+        :return: string representation of the data
+        '''
         if 'results' in self._data:
             actual_data = self._data['results']
             header = actual_data[0].keys()
@@ -50,6 +61,11 @@ class NOAA:
 
     @staticmethod
     def _date_validation(date):
+        '''
+        Verifies given date if it is following the desired format.
+        :param date: A date string
+        :raise ValueError if the string does not follow the desired format
+        '''
         try:
             datetime.datetime.strptime(date, '%Y-%m-%d')
         except ValueError:
@@ -57,6 +73,13 @@ class NOAA:
 
     @staticmethod
     def _add_param(full_list, param_name, param_values):
+        '''
+        Add parameters to the current list of accepted parameters
+        :param full_list: Current list of accepted parameters
+        :param param_name: The name of the parameter that should be added
+        :param param_values: The value of the parameter that should be added
+        :return:
+        '''
         if type(param_values) == list:
             for elem in param_values:
                 full_list.append('{}={}'.format(param_name, elem))
@@ -65,12 +88,24 @@ class NOAA:
 
     @staticmethod
     def _get_data(url, token):
+        '''
+        Gets the data from the url
+        :param url: The url that is being accessed
+        :param token: The token to access the url
+        :return: The data from the url, in Data type
+        '''
         ans = requests.get(url, headers={
             'token': token
         })
         return Data(ans.json())
 
     def _list_checks(self, all_entries, kwargs, key_to_check):
+        '''
+        Looks into entries that has list as type for value
+        :param all_entries: All current accepted entries for the url
+        :param kwargs: keyword arguments
+        :param key_to_check: key name to check the entries
+        '''
         if key_to_check in kwargs:
             if type(kwargs[key_to_check]) != list:
                 raise TypeError("{} should be declared as a list".format(key_to_check))
@@ -78,6 +113,14 @@ class NOAA:
                 self._add_param(all_entries, key_to_check.replace("_", ""), kwargs[key_to_check])
 
     def _make_url(self, url, kwargs, list_params, required_day=False):
+        '''
+        Creates the url to connect to
+        :param url: The current url
+        :param kwargs: keyword arguments
+        :param list_params: list of params that have list as value type
+        :param required_day: defaults at False. True if the functionality requires date as parameter
+        :return: the url to be connected to.
+        '''
         available_params = []
         if 'search_id' in kwargs and kwargs['search_id'] is not None:
             url += '/{}'.format(kwargs['search_id'])
