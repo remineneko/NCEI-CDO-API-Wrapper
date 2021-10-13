@@ -1,5 +1,5 @@
 # NCEI CDO API Wrapper
- a very simple and naive Python wrapper for the NCEI Climate Data Online API v2 (https://www.ncdc.noaa.gov/cdo-web/webservices/v2) 
+ a very simple and naive Python wrapper for the [NCEI Climate Data Online API v2](https://www.ncdc.noaa.gov/cdo-web/webservices/v2) 
 
 ## How to use
 - First, obtain the API Token from the [request page](https://www.ncdc.noaa.gov/cdo-web/token)
