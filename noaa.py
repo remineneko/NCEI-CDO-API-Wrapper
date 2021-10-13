@@ -1,11 +1,47 @@
 __author__ = "Hoang Tran"
-__version__ = '1.0'
+__version__ = '1.1'
 
 import requests
 import datetime
 from dateutil.relativedelta import relativedelta
+import tabulate
 
 BASE_URL = "https://www.ncdc.noaa.gov/cdo-web/api/v2/{}"
+
+
+class Data(dict):
+    def __init__(self, given_data:dict):
+        super(dict, self).__init__()
+        self._data = given_data
+
+    def results_data(self):
+        if 'results' in self._data:
+            return self._data['results']
+        else:
+            return self._data
+
+    def metadata(self):
+        if 'metadata' in self._data:
+            return self._data['metadata']
+        else:
+            raise KeyError("The given data does not have metadata as key")
+
+    def __str__(self):
+        if 'results' in self._data:
+            actual_data = self._data['results']
+            header = actual_data[0].keys()
+            rows = [x.values() for x in actual_data]
+        else:
+            header = self._data.keys()
+            rows = list(self._data.values())
+
+        return tabulate.tabulate(rows, header)
+
+    def __repr__(self):
+        return self._data
+
+    def __getitem__(self, item):
+        return self._data[item]
 
 
 class NOAA:
@@ -32,7 +68,7 @@ class NOAA:
         ans = requests.get(url, headers={
             'token': token
         })
-        return ans.json()
+        return Data(ans.json())
 
     def _list_checks(self, all_entries, kwargs, key_to_check):
         if key_to_check in kwargs:
